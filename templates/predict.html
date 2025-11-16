@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Prediction Assessment - ThyroPredict{% endblock %}
+
+{% block content %}
+<section class="prediction-section">
+    <div class="container">
+        <div class="prediction-card">
+            <div class="prediction-header">
+                <h1>Thyroid Health Assessment</h1>
+                <p class="subtitle">Answer a few quick questions about your health</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <p class="progress-text" id="progressText">Question 1 of 8</p>
+            </div>
+
+            <form id="surveyForm" class="survey-form">
+                <!-- Q1: Gender -->
+                <div class="survey-question" id="question-1" data-question="1">
+                    <label for="gender">What is your gender?</label>
+                    <p class="form-hint">This helps us provide personalized recommendations</p>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="gender" value="M" required>
+                            <span>Male</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="gender" value="F" required>
+                            <span>Female</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Q2: Age -->
+                <div class="survey-question" id="question-2" data-question="2" style="display: none;">
+                    <label for="age">What is your age?</label>
+                    <p class="form-hint">This helps us understand age-related risk factors</p>
+                    <div class="input-wrapper">
+                        <input type="number" id="age" name="age" min="18" max="120" placeholder="Enter your age" required>
+                        <span class="input-suffix">years</span>
+                    </div>
+                </div>
+
+                <!-- Q3: TSH Levels -->
+                <div class="survey-question" id="question-3" data-question="3" style="display: none;">
+                    <label for="tsh">TSH Level</label>
+                    <p class="form-hint">Thyroid Stimulating Hormone from your latest test</p>
+                    <div class="input-wrapper">
+                        <input type="number" id="tsh" name="tsh" min="0" step="0.01" placeholder="Enter TSH level" required>
+                        <span class="input-suffix">mIU/L</span>
+                    </div>
+                    <p class="form-reference">Normal range: 0.4 - 4.0 mIU/L</p>
+                </div>
+
+                <!-- Q4: T3 Levels -->
+                <div class="survey-question" id="question-4" data-question="4" style="display: none;">
+                    <label for="t3">T3 Level</label>
+                    <p class="form-hint">Triiodothyronine (Free T3) level</p>
+                    <div class="input-wrapper">
+                        <input type="number" id="t3" name="t3" min="0" step="0.1" placeholder="Enter T3 level" required>
+                        <span class="input-suffix">ng/dL</span>
+                    </div>
+                    <p class="form-reference">Normal range: 70 - 200 ng/dL</p>
+                </div>
+
+                <!-- Q5: TT4 Levels -->
+                <div class="survey-question" id="question-5" data-question="5" style="display: none;">
+                    <label for="tt4">TT4 Level</label>
+                    <p class="form-hint">Total Thyroxine level</p>
+                    <div class="input-wrapper">
+                        <input type="number" id="tt4" name="tt4" min="0" step="0.1" placeholder="Enter TT4 level" required>
+                        <span class="input-suffix">μg/dL</span>
+                    </div>
+                    <p class="form-reference">Normal range: 4.5 - 12.0 μg/dL</p>
+                </div>
+
+                <!-- Q6: T4U Levels -->
+                <div class="survey-question" id="question-6" data-question="6" style="display: none;">
+                    <label for="t4u">T4U Level</label>
+                    <p class="form-hint">T4 Uptake level</p>
+                    <div class="input-wrapper">
+                        <input type="number" id="t4u" name="t4u" min="0" step="0.01" placeholder="Enter T4U level" required>
+                        <span class="input-suffix">%</span>
+                    </div>
+                    <p class="form-reference">Normal range: 24 - 39 %</p>
+                </div>
+
+                <!-- Q7: FTI Levels -->
+                <div class="survey-question" id="question-7" data-question="7" style="display: none;">
+                    <label for="fti">FTI Level</label>
+                    <p class="form-hint">Free Thyroxine Index</p>
+                    <div class="input-wrapper">
+                        <input type="number" id="fti" name="fti" min="0" step="0.1" placeholder="Enter FTI level" required>
+                        <span class="input-suffix">μIU</span>
+                    </div>
+                    <p class="form-reference">Normal range: 1.2 - 4.9 μIU</p>
+                </div>
+
+                <!-- Q8: TBG Levels -->
+                <div class="survey-question" id="question-8" data-question="8" style="display: none;">
+                    <label for="tbg">TBG Level</label>
+                    <p class="form-hint">Thyroid Binding Globulin level</p>
+                    <div class="input-wrapper">
+                        <input type="number" id="tbg" name="tbg" min="0" step="0.1" placeholder="Enter TBG level" required>
+                        <span class="input-suffix">ng/mL</span>
+                    </div>
+                    <p class="form-reference">Normal range: 10 - 26 ng/mL</p>
+                </div>
+
+                <!-- Q9: Pregnant (Conditional - only for females) -->
+                <div class="survey-question" id="question-9" data-question="9" style="display: none;">
+                    <label>Are you currently pregnant?</label>
+                    <p class="form-hint">Pregnancy affects thyroid hormone levels</p>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="pregnant" value="yes">
+                            <span>Yes</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="pregnant" value="no">
+                            <span>No</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="pregnant" value="prefer-not-to-say">
+                            <span>Prefer not to say</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">← Previous</button>
+                    <button type="button" class="btn btn-primary" id="nextBtn">Next →</button>
+                </div>
+
+                <div class="disclaimer-box">
+                    <p><strong>Important:</strong> This assessment is for informational purposes only and not a substitute for professional medical advice. Always consult with a qualified healthcare professional.</p>
+                </div>
+            </form>
+
+            <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+                <div class="spinner"></div>
+                <p>Analyzing your clinical markers...</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/survey.js') }}"></script>
+{% endblock %}

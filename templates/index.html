@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}ThyroPredict - Home{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-text">
+            <h2 class="hero-subtitle">AI-Powered Thyroid Health Assessment</h2>
+            <h1 class="hero-title">Predict Your Thyroid Health Risk</h1>
+            <p class="hero-description">Advanced machine learning technology to assess your risk for hyperthyroidism and hypothyroidism based on clinical markers</p>
+            <div class="hero-buttons">
+                <a href="/predict" class="btn btn-primary">Take Assessment</a>
+                <a href="/about" class="btn btn-secondary">Learn More</a>
+            </div>
+        </div>
+        <div class="hero-gradient"></div>
+    </div>
+</section>
+
+<section class="features">
+    <div class="container">
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">ⓘ</div>
+                <h3>ML-Powered Analysis</h3>
+                <p>Our advanced machine learning model analyzes multiple clinical markers to provide accurate risk predictions</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Personalized Results</h3>
+                <p>Get tailored recommendations including supplements, diet advice, and nearby healthcare providers</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔬</div>
+                <h3>Research-Backed</h3>
+                <p>Built on peer-reviewed research and validated clinical data for reliable health insights</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="about-preview">
+    <div class="container">
+        <h2>About ThyroPredict</h2>
+        <p>ThyroPredict is an innovative machine learning application designed to help individuals assess their risk for thyroid disorders. Using advanced algorithms trained on clinical data, our system analyzes hormone levels, demographic information, and other health markers to provide personalized risk assessments.</p>
+        <p>Our mission is to make thyroid health screening more accessible and empower individuals with actionable insights about their health. Early detection and awareness can lead to better health outcomes and improved quality of life.</p>
+        <a href="/about" class="btn btn-link">Learn More About Us →</a>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Research - ThyroPredict{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Thyroid Research & Scientific Evidence</h1>
+        <p class="subtitle">Stay updated with the latest advancements in thyroid science and explore the research powering our prediction model.</p>
+    </div>
+</section>
+
+<section class="content-section">
+    <div class="container">
+        <h2>Latest Thyroid Research</h2>
+        <p class="subtitle">Source: Automatically fetched from CrossRef API.</p>
+    </div>
+</section>
+
+<section class="publications">
+    <div class="container">
+
+        <h2>Peer-Reviewed Research</h2>
+        
+        {% if hypothyroidism_papers %}
+        <div class="research-category">
+            <h3>Hypothyroidism Research</h3>
+            <div class="publication-list">
+                {% for paper in hypothyroidism_papers %}
+                <div class="publication-card">
+                    <h4>{{ paper.title }}</h4>
+                    <p class="publication-authors">{{ paper.authors }}</p>
+                    <p class="publication-journal">{{ paper.journal }} ({{ paper.year }})</p>
+                    <p class="publication-abstract">{{ paper.abstract }}</p>
+                    <a href="{{ paper.url }}" target="_blank" class="publication-link">Read on PubMed →</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if hyperthyroidism_papers %}
+        <div class="research-category">
+            <h3>Hyperthyroidism Research</h3>
+            <div class="publication-list">
+                {% for paper in hyperthyroidism_papers %}
+                <div class="publication-card">
+                    <h4>{{ paper.title }}</h4>
+                    <p class="publication-authors">{{ paper.authors }}</p>
+                    <p class="publication-journal">{{ paper.journal }} ({{ paper.year }})</p>
+                    <p class="publication-abstract">{{ paper.abstract }}</p>
+                    <a href="{{ paper.url }}" target="_blank" class="publication-link">Read on PubMed →</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if thyroid_ml_papers %}
+        <div class="research-category">
+            <h3>Machine Learning in Thyroid Diagnosis</h3>
+            <div class="publication-list">
+                {% for paper in thyroid_ml_papers %}
+                <div class="publication-card">
+                    <h4>{{ paper.title }}</h4>
+                    <p class="publication-authors">{{ paper.authors }}</p>
+                    <p class="publication-journal">{{ paper.journal }} ({{ paper.year }})</p>
+                    <p class="publication-abstract">{{ paper.abstract }}</p>
+                    <a href="{{ paper.url }}" target="_blank" class="publication-link">Read on PubMed →</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if not hypothyroidism_papers and not hyperthyroidism_papers and not thyroid_ml_papers %}
+        <p class="loading-message">Loading research papers from PubMed...</p>
+        {% endif %}
+    </div>
+</section>
+
+<section class="methodology">
+    <div class="container">
+        <h2>Our Research References</h2>
+        <p class="section-subtitle">The research that informed ThyroPredict's development</p>
+        <div class="reference-list">
+            <div class="reference-item">
+                <h3>Prevalence and Risk Factors of Subclinical Thyroid Disease</h3>
+                <p><strong>Citation:</strong> Kim, Y.A. & Park, Y.J. (2014). Endocrinology and Metabolism, 29(1), 20-29. <a href="https://doi.org/10.3803/EnM.2014.29.1.20" target="_blank">https://doi.org/10.3803/EnM.2014.29.1.20</a></p>
+                <p>Kim and Park (2014) provide one of the most widely referenced analyses of subclinical thyroid dysfunction. Their study highlights how subtle hormonal imbalances—especially slight shifts in TSH and Free T4—can signal early thyroid disruption even before symptoms appear.</p>
+            </div>
+            <div class="reference-item">
+                <h3>How to Interpret Thyroid Function Tests</h3>
+                <p><strong>Citation:</strong> Koulouri, O., & Gurnell, M. (2013). Clinical Medicine (London), 13(3), 282-286. <a href="https://doi.org/10.7861/clinmedicine.13-3-282" target="_blank">https://doi.org/10.7861/clinmedicine.13-3-282</a></p>
+                <p>Koulouri & Gurnell (2013) provide one of the most practical and clinician-focused explanations of how to interpret TSH, Free T4, and Free T3 results. Their work highlights the importance of evaluating thyroid hormones in context—considering pituitary function, illness, medication effects, and the dynamic relationship between TSH and circulating thyroid hormones.</p>
+            </div>
+            <div class="reference-item">
+                <h3>Risk Estimation and Prediction Using Machine-Learning Methods</h3>
+                <p><strong>Citation:</strong> Kruppa, J., Ziegler, A., & König, I. R. (2012). Human Genetics, 131(10), 1639-1654. <a href="https://doi.org/10.1007/s00439-012-1194-y" target="_blank">https://doi.org/10.1007/s00439-012-1194-y</a></p>
+                <p>This paper explores how machine-learning methods can enhance risk estimation and patient classification beyond traditional statistical techniques. The authors show that while genetic association studies identify susceptibility variants, translating those into accurate individual risk predictions is challenging. Their review emphasises that for model-building (especially in complex diseases) features like calibration, discrimination, and validation on independent data are vital.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

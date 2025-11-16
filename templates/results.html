@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Your Assessment Results - ThyroPredict{% endblock %}
+
+{% block content %}
+<section class="results-section">
+    <div class="container">
+        <div class="results-container">
+            <div class="results-header">
+                <h1>Your Thyroid Health Assessment</h1>
+                <p class="results-subtitle">Based on your clinical markers, here are your personalized results</p>
+            </div>
+
+            <div class="risk-cards-container">
+                <div id="resultsContent" class="results-content">
+                    <!-- Results will be loaded here by JavaScript -->
+                </div>
+            </div>
+
+            <div id="recommendationsSection" class="recommendations-section" style="display: none;">
+                <h2>Personalized Recommendations</h2>
+
+                <div class="recommendations-grid">
+                    <div class="recommendation-card">
+                        <div class="rec-icon">💊</div>
+                        <h3>Supplement Advice</h3>
+                        <div id="supplementAdvice" class="advice-content">
+                            <!-- Will be filled by JavaScript -->
+                        </div>
+                    </div>
+
+                    <div class="recommendation-card">
+                        <div class="rec-icon">🍽️</div>
+                        <h3>Dietary Recommendations</h3>
+                        <div id="dietaryAdvice" class="advice-content">
+                            <!-- Will be filled by JavaScript -->
+                        </div>
+                    </div>
+
+                    <div class="recommendation-card">
+                        <div class="rec-icon">👨‍⚕️</div>
+                        <h3>Healthcare Providers</h3>
+                        <div id="providerAdvice" class="advice-content">
+                            <!-- Will be filled by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Doctors Near You Section -->
+            <div id="doctorsSection" class="doctors-section" style="display: none;">
+                <h2>👨‍⚕️ Find Endocrinologists Near You (Canada)</h2>
+                <p class="section-subtitle">Search for endocrinologists in your area by entering your postal code</p>
+                
+                <!-- Postal Code Search Box -->
+                <div class="postal-code-search">
+                    <div class="search-form">
+                        <input type="text" id="postalCodeInput" placeholder="Enter your Canadian postal code (e.g., M5V 3A8)" maxlength="7" class="postal-input">
+                        <button id="searchBtn" class="btn btn-primary">🔍 Find Endocrinologists</button>
+                    </div>
+                    <p class="search-hint">We use Google Maps to find verified healthcare providers near you</p>
+                </div>
+
+                <!-- Map Container -->
+                <div id="map" class="map-container"></div>
+
+                <!-- Results Section -->
+                <div id="resultsContainer" style="display: none; margin-top: 2rem;">
+                    <h3 id="resultsTitle">Endocrinologists Found</h3>
+                    <div id="providersList" class="providers-list"></div>
+                </div>
+
+                <!-- Alternative Specialist Cards -->
+                <h3 style="margin-top: 3rem; margin-bottom: 2rem;">Other Healthcare Specialists</h3>
+                <div class="specialist-grid">
+                    <div class="specialist-card">
+                        <div class="specialist-icon">👨‍⚕️</div>
+                        <h3>Primary Care Physicians</h3>
+                        <p>General practitioners and internists. Can order initial thyroid tests and provide basic management. Consider referral to endocrinologist for complex cases.</p>
+                        <a href="https://www.healthgrades.com" target="_blank" class="specialist-link">Find PCP →</a>
+                    </div>
+                    <div class="specialist-card">
+                        <div class="specialist-icon">🧬</div>
+                        <h3>Clinical Geneticists</h3>
+                        <p>If autoimmune thyroid disease (Hashimoto's, Graves'). Helpful for understanding family history and genetic predisposition.</p>
+                        <a href="https://www.nsgc.org/find-a-genetic-counselor" target="_blank" class="specialist-link">Find Geneticist →</a>
+                    </div>
+                    <div class="specialist-card">
+                        <div class="specialist-icon">💊</div>
+                        <h3>Pharmacists</h3>
+                        <p>Medication specialists who understand drug interactions and optimal timing of thyroid medication administration.</p>
+                        <a href="https://www.pharmacist.com/find-a-pharmacist" target="_blank" class="specialist-link">Find Pharmacist →</a>
+                    </div>
+                    <div class="specialist-card">
+                        <div class="specialist-icon">🌿</div>
+                        <h3>Functional Medicine</h3>
+                        <p>Holistic approach to thyroid health, focusing on root causes and lifestyle optimization. Complements conventional treatment.</p>
+                        <a href="https://www.ifm.org/find-a-practitioner" target="_blank" class="specialist-link">Find Practitioner →</a>
+                    </div>
+                </div>
+
+                <div class="find-provider-box">
+                    <h3>💡 Tips for Finding Healthcare Providers</h3>
+                    <div class="provider-options">
+                        <div class="option">
+                            <strong>Insurance Network Search:</strong> Check your provincial health plan or insurance provider's website for covered endocrinologists
+                        </div>
+                        <div class="option">
+                            <strong>Referral from GP:</strong> Ask your family doctor for a specialist referral to endocrinology
+                        </div>
+                        <div class="option">
+                            <strong>Hospital Endocrinology Departments:</strong> Contact your nearest hospital's endocrinology department for appointments
+                        </div>
+                        <div class="option">
+                            <strong>Canadian Endocrine Society:</strong> Visit <a href="https://www.ces.ca" target="_blank">www.ces.ca</a> for thyroid resources and provider directories
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions-container">
+                <a href="/predict" class="btn btn-secondary">Take Another Assessment</a>
+                <a href="/" class="btn btn-link">Return to Home</a>
+            </div>
+
+            <div class="disclaimer-box">
+                <p><strong>Important Medical Disclaimer:</strong> This assessment is for informational and educational purposes only. The results should not be considered a substitute for professional medical advice, diagnosis, or treatment. Always consult with a qualified healthcare professional, particularly an endocrinologist, before making any health decisions or starting new treatments. If you have concerns about your thyroid health, please schedule an appointment with your primary care physician or an endocrinologist as soon as possible.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAb40rWkjSh9d8NRhrWZbRkBPxvSlIgCjQ&libraries=places,geometry"></script>
+<script src="{{ url_for('static', filename='js/doctor-finder.js') }}"></script>
+<script src="{{ url_for('static', filename='js/results.js') }}"></script>
+{% endblock %}

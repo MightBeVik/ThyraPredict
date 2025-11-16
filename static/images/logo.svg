@@ -1,0 +1,22 @@
+<svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg" width="800" height="800">
+  <!-- Main thyroid shape (butterfly shape) -->
+  <defs>
+    <style>
+      .thyroid-main {
+        fill: #1abc9c;
+      }
+    </style>
+  </defs>
+  
+  <!-- Left lobe -->
+  <ellipse cx="220" cy="280" rx="140" ry="180" class="thyroid-main"/>
+  
+  <!-- Right lobe -->
+  <ellipse cx="580" cy="280" rx="140" ry="180" class="thyroid-main"/>
+  
+  <!-- Bridge/Isthmus connecting the lobes -->
+  <rect x="340" y="340" width="120" height="100" rx="50" class="thyroid-main"/>
+  
+  <!-- Central cutout to create butterfly shape -->
+  <ellipse cx="400" cy="380" rx="80" ry="120" fill="white"/>
+</svg>

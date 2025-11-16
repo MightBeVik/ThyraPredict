@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ThyroPredict - Thyroid Health Assessment{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo">
+                    <a href="/">
+                        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="ThyroPredict Logo" class="logo-img">
+                        <span class="logo-text">ThyroPredict</span>
+                    </a>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="/" class="{% if request.endpoint == 'home' %}active{% endif %}">Home</a></li>
+                    <li><a href="/about" class="{% if request.endpoint == 'about' %}active{% endif %}">About</a></li>
+                    <li><a href="/research" class="{% if request.endpoint == 'research' %}active{% endif %}">Research</a></li>
+                    <li><a href="/model" class="{% if request.endpoint == 'model' %}active{% endif %}">Model</a></li>
+                    <li><a href="/data" class="{% if request.endpoint == 'data' %}active{% endif %}">Data</a></li>
+                </ul>
+                <a href="/predict" class="cta-button">Start Assessment</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>ThyroPredict</h4>
+                    <p>AI-powered thyroid health assessment</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/about">About</a></li>
+                        <li><a href="/research">Research</a></li>
+                        <li><a href="/predict">Assessment</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>Email: info@thyropredict.com</p>
+                    <p>Phone: +1 (555) 123-4567</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 ThyroPredict. All rights reserved.</p>
+                <p>Disclaimer: This tool is for informational purposes only and not a substitute for professional medical advice.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
