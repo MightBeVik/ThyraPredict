@@ -22,44 +22,116 @@ function displayResults(results) {
         return;
     }
     
-    const hyper = results.hyperthyroidism;
-    const hypo = results.hypothyroidism;
+    // Handle new ensemble model response format
+    const isNewFormat = results.prediction && results.probabilities;
     
-    // Create risk cards HTML
-    const riskCardsHTML = `
-        <div class="risk-card ${getRiskColorClass(hyper.risk_level)}">
-            <div class="risk-header">
-                <h3>Hyperthyroidism Risk</h3>
-                <span class="risk-badge">${hyper.risk_level}</span>
-            </div>
-            <div class="risk-score">
-                <div class="score-value">${(hyper.risk_score * 100).toFixed(0)}%</div>
-                <div class="score-bar">
-                    <div class="score-fill" style="width: ${hyper.risk_score * 100}%; background: ${getRiskColor(hyper.risk_level)};"></div>
+    let riskCardsHTML;
+    
+    if (isNewFormat) {
+        // New soft ensemble format
+        const prediction = results.prediction;
+        const confidence = results.confidence;
+        const probs = results.probabilities;
+        
+        // Determine risk level based on confidence
+        const getRiskLevel = (conf) => conf >= 80 ? 'HIGH' : conf >= 50 ? 'MEDIUM' : 'LOW';
+        const getPredictionMessage = (pred) => {
+            switch(pred) {
+                case 'Negative':
+                    return 'Your thyroid appears to be functioning normally. Continue with routine checkups.';
+                case 'Hyper':
+                    return 'Results suggest possible hyperthyroidism. Please consult with an endocrinologist for confirmation and treatment options.';
+                case 'Hypo':
+                    return 'Results suggest possible hypothyroidism. Please consult with an endocrinologist for confirmation and treatment options.';
+                default:
+                    return 'Please consult with a healthcare provider for accurate diagnosis.';
+            }
+        };
+        
+        riskCardsHTML = `
+            <div class="risk-card primary-result">
+                <div class="risk-header">
+                    <h3>Primary Prediction</h3>
+                    <span class="risk-badge prediction-badge">${prediction}</span>
                 </div>
+                <div class="risk-score">
+                    <div class="score-value">${confidence.toFixed(1)}%</div>
+                    <div class="score-bar">
+                        <div class="score-fill" style="width: ${confidence}%; background: #3498db;"></div>
+                    </div>
+                </div>
+                <p class="risk-message">${getPredictionMessage(prediction)}</p>
             </div>
-            <p class="risk-message">${hyper.message}</p>
-        </div>
 
-        <div class="risk-card ${getRiskColorClass(hypo.risk_level)}">
-            <div class="risk-header">
-                <h3>Hypothyroidism Risk</h3>
-                <span class="risk-badge">${hypo.risk_level}</span>
-            </div>
-            <div class="risk-score">
-                <div class="score-value">${(hypo.risk_score * 100).toFixed(0)}%</div>
-                <div class="score-bar">
-                    <div class="score-fill" style="width: ${hypo.risk_score * 100}%; background: ${getRiskColor(hypo.risk_level)};"></div>
+            <div class="risk-breakdown">
+                <h3>Risk Breakdown</h3>
+                <div class="breakdown-cards">
+                    <div class="breakdown-card">
+                        <div class="breakdown-label">Negative (Normal)</div>
+                        <div class="breakdown-bar">
+                            <div class="breakdown-fill" style="width: ${probs.Negative}%; background: #27ae60;"></div>
+                        </div>
+                        <div class="breakdown-value">${probs.Negative.toFixed(1)}%</div>
+                    </div>
+                    <div class="breakdown-card">
+                        <div class="breakdown-label">Hypothyroidism</div>
+                        <div class="breakdown-bar">
+                            <div class="breakdown-fill" style="width: ${probs.Hypo}%; background: #f39c12;"></div>
+                        </div>
+                        <div class="breakdown-value">${probs.Hypo.toFixed(1)}%</div>
+                    </div>
+                    <div class="breakdown-card">
+                        <div class="breakdown-label">Hyperthyroidism</div>
+                        <div class="breakdown-bar">
+                            <div class="breakdown-fill" style="width: ${probs.Hyper}%; background: #e74c3c;"></div>
+                        </div>
+                        <div class="breakdown-value">${probs.Hyper.toFixed(1)}%</div>
+                    </div>
                 </div>
             </div>
-            <p class="risk-message">${hypo.message}</p>
-        </div>
-    `;
+        `;
+    } else {
+        // Old format (fallback)
+        const hyper = results.hyperthyroidism;
+        const hypo = results.hypothyroidism;
+        
+        riskCardsHTML = `
+            <div class="risk-card ${getRiskColorClass(hyper.risk_level)}">
+                <div class="risk-header">
+                    <h3>Hyperthyroidism Risk</h3>
+                    <span class="risk-badge">${hyper.risk_level}</span>
+                </div>
+                <div class="risk-score">
+                    <div class="score-value">${(hyper.risk_score * 100).toFixed(0)}%</div>
+                    <div class="score-bar">
+                        <div class="score-fill" style="width: ${hyper.risk_score * 100}%; background: ${getRiskColor(hyper.risk_level)};"></div>
+                    </div>
+                </div>
+                <p class="risk-message">${hyper.message}</p>
+            </div>
+
+            <div class="risk-card ${getRiskColorClass(hypo.risk_level)}">
+                <div class="risk-header">
+                    <h3>Hypothyroidism Risk</h3>
+                    <span class="risk-badge">${hypo.risk_level}</span>
+                </div>
+                <div class="risk-score">
+                    <div class="score-value">${(hypo.risk_score * 100).toFixed(0)}%</div>
+                    <div class="score-bar">
+                        <div class="score-fill" style="width: ${hypo.risk_score * 100}%; background: ${getRiskColor(hypo.risk_level)};"></div>
+                    </div>
+                </div>
+                <p class="risk-message">${hypo.message}</p>
+            </div>
+        `;
+    }
     
     resultsContent.innerHTML = riskCardsHTML;
     
-    // Fill recommendations
-    fillRecommendations(hyper, hypo);
+    // Fill recommendations only for old format
+    if (!isNewFormat) {
+        fillRecommendations(results.hyperthyroidism, results.hypothyroidism);
+    }
     recommendationsSection.style.display = 'block';
     
     // Clear session storage after displaying

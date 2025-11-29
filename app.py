@@ -8,12 +8,18 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 import time
 import json
+import sys
+
+# Add Model directory to path for imports
+model_dir = os.path.join(os.path.dirname(__file__), 'Model')
+sys.path.insert(0, model_dir)
+
+from predict import SoftEnsemblePredictor
 
 app = Flask(__name__)
 
-# Load model (we'll create a dummy model for now)
-# In production, load your trained model here
-# model = joblib.load('model.pkl')
+# Initialize the soft ensemble predictor
+predictor = SoftEnsemblePredictor(model_dir=model_dir)
 
 # Cache for papers
 papers_cache = {
@@ -215,186 +221,54 @@ def results():
 # Route for processing prediction
 @app.route('/api/predict', methods=['POST'])
 def predict():
-    """Predict thyroid condition based on survey input"""
+    """Predict thyroid condition using soft ensemble model"""
     try:
         data = request.json
         
-        # Get input values from survey
+        # Map input data to feature names expected by the model
         gender = data.get('gender', '')
-        age = float(data.get('age', 0))
-        tsh = float(data.get('tsh', 0))
-        t3 = float(data.get('t3', 0))
-        tt4 = float(data.get('tt4', 0))
-        t4u = float(data.get('t4u', 0))
-        fti = float(data.get('fti', 0))
-        tbg = float(data.get('tbg', 0))
-        pregnant = data.get('pregnant', None)  # Can be 'yes', 'no', 'prefer-not-to-say', or None
+        pregnant = data.get('pregnant', '')
         
-        # Create feature array with new fields
-        features = {
-            'gender': gender,
-            'age': age,
-            'tsh': tsh,
-            't3': t3,
-            'tt4': tt4,
-            't4u': t4u,
-            'fti': fti,
-            'tbg': tbg,
-            'pregnant': pregnant
+        input_features = {
+            'age': float(data.get('age', 0)),
+            'sex': 1 if gender and gender.lower() == 'female' else 0,
+            'pregnant': 1 if pregnant and pregnant.lower() == 'yes' else 0,
+            'TSH_measured': 1 if data.get('tsh', 0) else 0,
+            'TSH': float(data.get('tsh', 0)),
+            'T3_measured': 1 if data.get('t3', 0) else 0,
+            'T3': float(data.get('t3', 0)),
+            'TT4_measured': 1 if data.get('tt4', 0) else 0,
+            'TT4': float(data.get('tt4', 0)),
+            'T4U_measured': 1 if data.get('t4u', 0) else 0,
+            'T4U': float(data.get('t4u', 0)),
+            'FTI_measured': 1 if data.get('fti', 0) else 0,
+            'FTI': float(data.get('fti', 0)),
+            'TBG_measured': 1 if data.get('tbg', 0) else 0,
+            'TBG': float(data.get('tbg', 0))
         }
         
-        # Make prediction
-        hyperthyroidism_risk = calculate_hyperthyroidism_risk(features)
-        hypothyroidism_risk = calculate_hypothyroidism_risk(features)
+        # Make prediction using soft ensemble
+        result = predictor.predict(input_features)
         
-        # Determine risk levels
-        hyper_level = get_risk_level(hyperthyroidism_risk)
-        hypo_level = get_risk_level(hypothyroidism_risk)
+        # Calculate negative probability (normal)
+        negative_pct = result['probabilities']['Negative']
+        hypo_pct = result['probabilities']['Hypo']
+        hyper_pct = result['probabilities']['Hyper']
         
         return jsonify({
             'success': True,
-            'hyperthyroidism': {
-                'risk_score': round(hyperthyroidism_risk, 2),
-                'risk_level': hyper_level,
-                'message': get_hyper_message(hyper_level)
+            'prediction': result['label'],
+            'confidence': result['confidence'],
+            'probabilities': {
+                'Negative': round(negative_pct, 2),
+                'Hypo': round(hypo_pct, 2),
+                'Hyper': round(hyper_pct, 2)
             },
-            'hypothyroidism': {
-                'risk_score': round(hypothyroidism_risk, 2),
-                'risk_level': hypo_level,
-                'message': get_hypo_message(hypo_level)
-            }
+            'model_type': result['model_type']
         })
     except Exception as e:
+        print(f"Prediction error: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 400
-
-def calculate_hyperthyroidism_risk(features):
-    """Calculate hyperthyroidism risk based on features"""
-    tsh = features['tsh']
-    t3 = features['t3']
-    tt4 = features['tt4']
-    t4u = features['t4u']
-    fti = features['fti']
-    age = features['age']
-    
-    # Risk calculation based on hormone levels
-    risk = 0
-    
-    # TSH is typically low in hyperthyroidism (normal: 0.4 - 4.0)
-    if tsh < 0.4:
-        risk += 0.35
-    elif tsh < 0.5:
-        risk += 0.20
-    
-    # T3 is typically high in hyperthyroidism (normal: 70 - 200)
-    if t3 > 200:
-        risk += 0.25
-    elif t3 > 180:
-        risk += 0.15
-    
-    # TT4 is typically high (normal: 4.5 - 12.0)
-    if tt4 > 12.0:
-        risk += 0.20
-    elif tt4 > 11.0:
-        risk += 0.10
-    
-    # T4U (uptake) - high values suggest hyperthyroidism (normal: 24 - 39%)
-    if t4u > 39:
-        risk += 0.15
-    
-    # FTI typically high in hyperthyroidism (normal: 1.2 - 4.9)
-    if fti > 4.9:
-        risk += 0.15
-    
-    # Age factor - hyperthyroidism more common in younger population
-    if age < 40:
-        risk -= 0.05
-    elif age > 60:
-        risk -= 0.10
-    
-    return min(max(risk, 0), 1.0)
-
-def calculate_hypothyroidism_risk(features):
-    """Calculate hypothyroidism risk based on features"""
-    tsh = features['tsh']
-    t3 = features['t3']
-    tt4 = features['tt4']
-    t4u = features['t4u']
-    fti = features['fti']
-    age = features['age']
-    gender = features['gender']
-    pregnant = features.get('pregnant')
-    
-    # Risk calculation based on hormone levels
-    risk = 0
-    
-    # TSH is typically high in hypothyroidism (normal: 0.4 - 4.0)
-    if tsh > 4.0:
-        risk += 0.35
-    elif tsh > 3.5:
-        risk += 0.20
-    
-    # T3 is typically low in hypothyroidism (normal: 70 - 200)
-    if t3 < 70:
-        risk += 0.25
-    elif t3 < 90:
-        risk += 0.15
-    
-    # TT4 is typically low (normal: 4.5 - 12.0)
-    if tt4 < 4.5:
-        risk += 0.20
-    elif tt4 < 6.0:
-        risk += 0.10
-    
-    # T4U (uptake) - low values suggest hypothyroidism (normal: 24 - 39%)
-    if t4u < 24:
-        risk += 0.15
-    
-    # FTI typically low in hypothyroidism (normal: 1.2 - 4.9)
-    if fti < 1.2:
-        risk += 0.15
-    
-    # Age factor - hypothyroidism more common in older population
-    if age > 60:
-        risk += 0.15
-    elif age > 50:
-        risk += 0.08
-    
-    # Gender factor - more common in women
-    if gender.upper() == 'F':
-        risk += 0.10
-    
-    # Pregnancy factor - increases risk
-    if pregnant == 'yes':
-        risk += 0.15
-    
-    return min(max(risk, 0), 1.0)
-
-def get_risk_level(score):
-    """Convert risk score to risk level"""
-    if score < 0.33:
-        return "LOW"
-    elif score < 0.67:
-        return "MEDIUM"
-    else:
-        return "HIGH"
-
-def get_hyper_message(level):
-    """Get message for hyperthyroidism risk"""
-    messages = {
-        "LOW": "Your markers suggest low risk for hyperthyroidism.",
-        "MEDIUM": "Your results indicate some markers that warrant attention. Consider consulting with an endocrinologist.",
-        "HIGH": "Your hormone levels indicate elevated risk. Please consult with an endocrinologist for comprehensive evaluation and treatment options."
-    }
-    return messages.get(level, "")
-
-def get_hypo_message(level):
-    """Get message for hypothyroidism risk"""
-    messages = {
-        "LOW": "Your markers suggest low risk for hypothyroidism.",
-        "MEDIUM": "Your results indicate some markers that warrant attention. Consider consulting with an endocrinologist.",
-        "HIGH": "Your hormone levels indicate elevated risk. Please consult with an endocrinologist for comprehensive evaluation and treatment options."
-    }
-    return messages.get(level, "")
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
