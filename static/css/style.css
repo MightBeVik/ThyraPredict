@@ -744,7 +744,8 @@ thead {
     color: white;
 }
 
-th, td {
+th,
+td {
     padding: 1.2rem;
     text-align: left;
     border-bottom: 1px solid #ecf0f1;
@@ -950,8 +951,13 @@ tbody tr:hover {
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 /* ===== Footer ===== */
@@ -1041,7 +1047,8 @@ tbody tr:hover {
         font-size: 0.9rem;
     }
 
-    th, td {
+    th,
+    td {
         padding: 0.8rem;
     }
 }
@@ -1376,6 +1383,7 @@ tbody tr:hover {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -1386,6 +1394,7 @@ tbody tr:hover {
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
@@ -1437,12 +1446,12 @@ tbody tr:hover {
     accent-color: var(--primary-color);
 }
 
-.radio-label input[type="radio"]:checked + span {
+.radio-label input[type="radio"]:checked+span {
     color: var(--primary-color);
     font-weight: 600;
 }
 
-.radio-label input[type="radio"]:checked + span::before {
+.radio-label input[type="radio"]:checked+span::before {
     content: "✓ ";
     color: var(--primary-color);
     font-weight: bold;
@@ -1526,12 +1535,16 @@ tbody tr:hover {
 }
 
 @keyframes shake {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateX(0);
     }
+
     25% {
         transform: translateX(-10px);
     }
+
     75% {
         transform: translateX(10px);
     }
@@ -2364,6 +2377,7 @@ tbody tr:hover {
     .providers-list {
         grid-template-columns: 1fr;
     }
+
     .model-diagram {
         flex-direction: column;
         gap: 2rem;
@@ -2377,81 +2391,81 @@ tbody tr:hover {
         transform: rotate(90deg);
     }
 
-/* ===== Soft Ensemble Results Styles ===== */
-.primary-result {
-    border-top-color: #3498db;
-    background: linear-gradient(135deg, rgba(52, 152, 219, 0.05), rgba(52, 152, 219, 0.02));
-}
+    /* ===== Soft Ensemble Results Styles ===== */
+    .primary-result {
+        border-top-color: #3498db;
+        background: linear-gradient(135deg, rgba(52, 152, 219, 0.05), rgba(52, 152, 219, 0.02));
+    }
 
-.prediction-badge {
-    background: #d6eaf8;
-    color: #3498db;
-    font-weight: 700;
-    font-size: 1rem;
-    padding: 0.5rem 1rem;
-}
+    .prediction-badge {
+        background: #d6eaf8;
+        color: #3498db;
+        font-weight: 700;
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+    }
 
-.risk-breakdown {
-    margin-top: 2rem;
-    padding: 2rem;
-    background: #f8f9fa;
-    border-radius: 12px;
-}
+    .risk-breakdown {
+        margin-top: 2rem;
+        padding: 2rem;
+        background: #f8f9fa;
+        border-radius: 12px;
+    }
 
-.risk-breakdown h3 {
-    font-size: 1.3rem;
-    color: var(--dark-gray);
-    margin-bottom: 1.5rem;
-    text-align: center;
-}
+    .risk-breakdown h3 {
+        font-size: 1.3rem;
+        color: var(--dark-gray);
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
 
-.breakdown-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-}
+    .breakdown-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
 
-.breakdown-card {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
-    text-align: center;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
+    .breakdown-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        text-align: center;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
 
-.breakdown-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
+    .breakdown-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
 
-.breakdown-label {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--text-color);
-    margin-bottom: 0.8rem;
-}
+    .breakdown-label {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 0.8rem;
+    }
 
-.breakdown-bar {
-    width: 100%;
-    height: 10px;
-    background: #e0e0e0;
-    border-radius: 5px;
-    overflow: hidden;
-    margin-bottom: 0.8rem;
-}
+    .breakdown-bar {
+        width: 100%;
+        height: 10px;
+        background: #e0e0e0;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-bottom: 0.8rem;
+    }
 
-.breakdown-fill {
-    height: 100%;
-    display: block;
-    transition: width 0.3s ease;
-}
+    .breakdown-fill {
+        height: 100%;
+        display: block;
+        transition: width 0.3s ease;
+    }
 
-.breakdown-value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--dark-gray);
-}
+    .breakdown-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--dark-gray);
+    }
 
     .recommendations-grid {
         grid-template-columns: 1fr;
@@ -2476,5 +2490,16 @@ tbody tr:hover {
     .limitations-list {
         grid-template-columns: 1fr;
     }
-}
 
+    .member-avatar {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        /* crops image perfectly */
+        border-radius: 50%;
+        /* makes it a circle */
+        display: block;
+        margin: 0 auto 12px;
+        /* centers the image */
+    }
+}
