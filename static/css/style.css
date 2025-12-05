@@ -2491,15 +2491,5 @@ tbody tr:hover {
         grid-template-columns: 1fr;
     }
 
-    .member-avatar {
-        width: 120px;
-        height: 120px;
-        object-fit: cover;
-        /* crops image perfectly */
-        border-radius: 50%;
-        /* makes it a circle */
-        display: block;
-        margin: 0 auto 12px;
-        /* centers the image */
-    }
+
 }
