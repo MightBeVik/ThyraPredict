@@ -430,6 +430,14 @@ body {
     line-height: 1;
 }
 
+.member-image {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+}
+
 .member-info {
     flex: 1;
 }
