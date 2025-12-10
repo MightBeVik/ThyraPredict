@@ -91,7 +91,7 @@
             <!-- Right Column: Info Card -->
             <div class="card info-card">
                 <div class="img-placeholder-anatomy">
-                    <img src="https://images.unsplash.com/photo-1576091160550-112f9c8bad6e?w=400&h=200&fit=crop" alt="Thyroid Anatomy">
+                    <img id="thyroidImage" src="https://images.unsplash.com/photo-1576091160550-112f9c8bad6e?w=400&h=200&fit=crop" alt="Thyroid Anatomy">
                 </div>
                 <div class="info-content">
                     <h3 id="thyroidInfoTitle">Normal Thyroid Gland</h3>
@@ -215,9 +215,19 @@
             if (prediction === 'hyperthyroid') {
                 document.getElementById('thyroidInfoTitle').textContent = 'Hyperthyroidism';
                 document.getElementById('thyroidInfoDescription').textContent = 'Hyperthyroidism occurs when the thyroid gland produces too much thyroid hormone. This can cause symptoms like rapid heartbeat, anxiety, weight loss, and tremors. It requires medical attention and treatment.';
+                // Set hyperactive thyroid image
+                document.getElementById('thyroidImage').src = 'static/images/hyper.png';
+                document.getElementById('thyroidImage').alt = 'Overactive Thyroid Gland - Hyperthyroidism';
             } else if (prediction === 'hypothyroid') {
                 document.getElementById('thyroidInfoTitle').textContent = 'Hypothyroidism';
                 document.getElementById('thyroidInfoDescription').textContent = 'Hypothyroidism occurs when the thyroid gland does not produce enough thyroid hormone. This can cause fatigue, weight gain, cold sensitivity, and depression. It is typically managed with medication.';
+                // Set underactive thyroid image
+                document.getElementById('thyroidImage').src = 'static/images/hypo.png';
+                document.getElementById('thyroidImage').alt = 'Underactive Thyroid Gland - Hypothyroidism';
+            } else {
+                // Normal thyroid image for negative prediction
+                document.getElementById('thyroidImage').src = 'static/images/normal.png';
+                document.getElementById('thyroidImage').alt = 'Normal Thyroid Gland';
             }
             
             // Update prediction description
