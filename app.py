@@ -54,21 +54,93 @@ def get_dataset_stats():
     if df is None:
         return None
     
+    # Diagnosis code mappings
+    diagnosis_map = {
+        # Hyperthyroid conditions
+        'A': 'Hyperthyroid',
+        'B': 'T3 Toxic',
+        'C': 'Toxic Goitre',
+        'D': 'Secondary Toxic',
+        # Hypothyroid conditions
+        'E': 'Hypothyroid',
+        'F': 'Primary Hypothyroid',
+        'G': 'Compensated Hypothyroid',
+        'H': 'Secondary Hypothyroid',
+        # Binding protein
+        'I': 'Increased Binding Protein',
+        'J': 'Decreased Binding Protein',
+        # General health
+        'K': 'Concurrent Illness',
+        # Replacement therapy
+        'L': 'Replacement Therapy',
+        'M': 'Underreplaced',
+        'N': 'Overreplaced',
+        # Antithyroid treatment
+        'O': 'Antithyroid Drugs',
+        'P': 'I131 Treatment',
+        'Q': 'Surgery',
+        # Miscellaneous
+        'R': 'Discordant Results',
+        'S': 'Elevated TBG',
+        'T': 'Elevated Thyroid Hormones',
+        '-': 'Healthy (No Condition)'
+    }
+    
+    # Categorize diagnoses
+    diagnosis_categories = {}
+    for target in df['target'].unique():
+        if pd.isna(target):
+            continue
+        
+        target_str = str(target).replace('|', '')  # Remove pipe character
+        
+        # Get all codes in the diagnosis (e.g., "GK" -> ["G", "K"])
+        codes = list(target_str)
+        
+        # Determine primary category based on the first code
+        primary_code = codes[0] if codes else '-'
+        
+        if primary_code == '-':
+            category = 'Healthy'
+        elif primary_code in ['A', 'B', 'C', 'D']:
+            category = 'Hyperthyroid'
+        elif primary_code in ['E', 'F', 'G', 'H']:
+            category = 'Hypothyroid'
+        else:
+            # For other codes, use their descriptive label
+            category = diagnosis_map.get(primary_code, primary_code)
+        
+        if category not in diagnosis_categories:
+            diagnosis_categories[category] = 0
+        diagnosis_categories[category] += df[df['target'] == target].shape[0]
+    
+    # Calculate age distribution (capped at 100 years)
+    df_age_capped = df[df['age'] <= 100]
+    age_bins = [18, 26, 36, 46, 56, 66, 76, 86, 96, 101]
+    age_labels = ['18-25', '26-35', '36-45', '46-55', '56-65', '66-75', '76-85', '86-95', '96-100']
+    age_distribution_series = pd.cut(df_age_capped['age'], bins=age_bins, labels=age_labels, right=False)
+    age_dist_temp = age_distribution_series.value_counts().sort_index().to_dict()
+    # Convert to ensure proper JSON serialization
+    age_distribution = {str(k): int(v) for k, v in age_dist_temp.items()}
+    
     stats = {
         'total_records': len(df),
         'total_features': len(df.columns),
         'age_stats': {
-            'mean': float(df['age'].mean()),
-            'median': float(df['age'].median()),
-            'min': float(df['age'].min()),
-            'max': float(df['age'].max()),
-            'std': float(df['age'].std())
+            'mean': float(df[df['age'] <= 100]['age'].mean()),  # Mean excluding outliers
+            'median': float(df[df['age'] <= 100]['age'].median()),  # Median excluding outliers
+            'min': float(df[df['age'] <= 100]['age'].min()),
+            'max': float(df[df['age'] <= 100]['age'].max()),
+            'std': float(df[df['age'] <= 100]['age'].std())
         },
+        'age_distribution': age_distribution,
         'gender_distribution': {
             'F': int(df[df['sex'] == 0].shape[0]),  # 0 = Female
             'M': int(df[df['sex'] == 1].shape[0])   # 1 = Male
         },
         'target_distribution': df['target'].value_counts().to_dict(),
+        'diagnosis_categories': diagnosis_categories,
+        'diagnosis_map': diagnosis_map,
         'tsh_stats': {
             'mean': float(df['TSH'].mean()),
             'median': float(df['TSH'].median()),

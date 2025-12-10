@@ -1,4 +1,4 @@
-// Results page handler
+// Results page handler - Updated for new results page design
 document.addEventListener('DOMContentLoaded', function() {
     // Retrieve results from session storage
     const resultsJSON = sessionStorage.getItem('predictionResults');
@@ -10,7 +10,29 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     const results = JSON.parse(resultsJSON);
-    displayResults(results);
+    
+    // Pass results to global window object for new results page
+    window.predictionResults = {
+        prediction: results.prediction || results.prediction_class || 'negative',
+        confidence: (results.confidence || results.confidence_score || 0.5),
+        probabilities: results.probabilities || {
+            'negative': parseFloat(results.negative_prob || 0.33),
+            'hyperthyroid': parseFloat(results.hyperthyroid_prob || 0.33),
+            'hypothyroid': parseFloat(results.hypothyroid_prob || 0.33)
+        }
+    };
+    
+    // Normalize prediction names
+    const pred = window.predictionResults.prediction.toLowerCase();
+    if (pred.includes('hyper')) {
+        window.predictionResults.prediction = 'hyperthyroid';
+    } else if (pred.includes('hypo')) {
+        window.predictionResults.prediction = 'hypothyroid';
+    } else {
+        window.predictionResults.prediction = 'negative';
+    }
+    
+    console.log('Prediction results loaded:', window.predictionResults);
 });
 
 function displayResults(results) {

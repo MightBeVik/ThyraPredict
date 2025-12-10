@@ -38,13 +38,29 @@ document.addEventListener('DOMContentLoaded', function() {
     // Age Distribution Chart
     if (document.getElementById('ageChart')) {
         const ageCtx = document.getElementById('ageChart').getContext('2d');
+        
+        // Use age distribution from backend if available
+        let ageData = stats.age_distribution || {};
+        
+        // Expected age bins
+        const ageBins = ['18-25', '26-35', '36-45', '46-55', '56-65', '66-75', '76-85', '86-95', '96-100'];
+        const ageValues = ageBins.map(bin => {
+            const value = ageData[bin];
+            return typeof value === 'number' ? value : (parseInt(value) || 0);
+        });
+        
+        // Log for debugging
+        console.log('Age distribution data:', ageData);
+        console.log('Age bins:', ageBins);
+        console.log('Age values:', ageValues);
+        
         new Chart(ageCtx, {
             type: 'bar',
             data: {
-                labels: ['18-25', '26-35', '36-45', '46-55', '56-65', '66-75', '76+'],
+                labels: ageBins,
                 datasets: [{
                     label: 'Number of Patients',
-                    data: [180, 420, 680, 1200, 2100, 2400, 1600],
+                    data: ageValues,
                     backgroundColor: [
                         '#1abc9c',
                         '#16a085',
@@ -52,7 +68,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         '#0e6251',
                         '#117a65',
                         '#0d5345',
-                        '#0a3d2a'
+                        '#0a3d2a',
+                        '#073420',
+                        '#051f17'
                     ],
                     borderColor: '#0a3d2a',
                     borderWidth: 2,
@@ -169,39 +187,91 @@ document.addEventListener('DOMContentLoaded', function() {
     // Target/Diagnosis Distribution Chart
     if (document.getElementById('targetChart')) {
         const targetCtx = document.getElementById('targetChart').getContext('2d');
-        const targetData = stats.target_distribution || {
-            'negative': 4200,
-            'hyperthyroid': 2847,
-            'hypothyroid': 3156,
-            'other': 0
+        
+        // Diagnosis code mappings from backend
+        const diagnosisCodeMap = {
+            'A': 'Hyperthyroid', 'B': 'T3 Toxic', 'C': 'Toxic Goitre', 'D': 'Secondary Toxic',
+            'E': 'Hypothyroid', 'F': 'Primary Hypothyroid', 'G': 'Compensated Hypothyroid', 'H': 'Secondary Hypothyroid',
+            'I': 'Increased Binding Protein', 'J': 'Decreased Binding Protein',
+            'K': 'Concurrent Illness',
+            'L': 'Replacement Therapy', 'M': 'Underreplaced', 'N': 'Overreplaced',
+            'O': 'Antithyroid Drugs', 'P': 'I131 Treatment', 'Q': 'Surgery',
+            'R': 'Discordant Results', 'S': 'Elevated TBG', 'T': 'Elevated Thyroid Hormones',
+            '-': 'Healthy'
         };
         
-        // Calculate percentages
-        const totalTarget = Object.values(targetData).reduce((a, b) => a + b, 0);
-        const diagnosisLabels = [];
-        const diagnosisValues = [];
-        const diagnosisPercents = [];
+        // Use diagnosis categories from backend
+        let diagnosisData = stats.diagnosis_categories || {};
         
-        const diagnosisMap = {
-            'negative': 'Healthy',
-            'hypothyroid': 'Hypothyroid',
-            'hyperthyroid': 'Hyperthyroid',
-            '-': 'Undetermined',
-            'other': 'Other'
-        };
-        
-        for (let key in targetData) {
-            if (targetData[key] > 0) {
-                diagnosisLabels.push(diagnosisMap[key] || key);
-                diagnosisValues.push(targetData[key]);
-                diagnosisPercents.push(((targetData[key] / totalTarget) * 100).toFixed(1));
+        // If we have raw target distribution but not categories, parse it
+        if (Object.keys(diagnosisData).length === 0 && stats.target_distribution) {
+            const targetData = stats.target_distribution;
+            
+            for (let target in targetData) {
+                if (targetData[target] > 0) {
+                    // Remove pipe character and get first code
+                    const cleanTarget = String(target).replace('|', '');
+                    const primaryCode = cleanTarget[0] || '-';
+                    
+                    let category;
+                    if (primaryCode === '-') {
+                        category = 'Healthy';
+                    } else if (['A', 'B', 'C', 'D'].includes(primaryCode)) {
+                        category = 'Hyperthyroid';
+                    } else if (['E', 'F', 'G', 'H'].includes(primaryCode)) {
+                        category = 'Hypothyroid';
+                    } else {
+                        category = diagnosisCodeMap[primaryCode] || primaryCode;
+                    }
+                    
+                    if (!diagnosisData[category]) {
+                        diagnosisData[category] = 0;
+                    }
+                    diagnosisData[category] += targetData[target];
+                }
             }
         }
+        
+        // Prepare chart data
+        const diagnosisLabels = Object.keys(diagnosisData).sort();
+        const diagnosisValues = diagnosisLabels.map(label => diagnosisData[label]);
+        const totalDiagnosis = diagnosisValues.reduce((a, b) => a + b, 0);
+        const diagnosisPercents = diagnosisValues.map(val => 
+            totalDiagnosis > 0 ? ((val / totalDiagnosis) * 100).toFixed(1) : 0
+        );
+        
+        // Define colors for different diagnosis categories
+        const colorMap = {
+            'Healthy': '#27ae60',
+            'Hyperthyroid': '#e74c3c',
+            'Hypothyroid': '#f39c12',
+            'T3 Toxic': '#c0392b',
+            'Toxic Goitre': '#e67e22',
+            'Secondary Toxic': '#d35400',
+            'Primary Hypothyroid': '#d68910',
+            'Compensated Hypothyroid': '#f1c40f',
+            'Secondary Hypothyroid': '#f39c12',
+            'Increased Binding Protein': '#3498db',
+            'Decreased Binding Protein': '#9b59b6',
+            'Concurrent Illness': '#e67e22',
+            'Replacement Therapy': '#16a085',
+            'Underreplaced': '#c0392b',
+            'Overreplaced': '#d35400',
+            'Antithyroid Drugs': '#2c3e50',
+            'I131 Treatment': '#34495e',
+            'Surgery': '#7f8c8d',
+            'Discordant Results': '#95a5a6',
+            'Elevated TBG': '#bdc3c7',
+            'Elevated Thyroid Hormones': '#ecf0f1'
+        };
+        
+        const backgroundColor = diagnosisLabels.map(label => colorMap[label] || '#95a5a6');
+        const borderColor = backgroundColor.map(color => color);
         
         // Update target stats
         let targetStatsHTML = '';
         diagnosisLabels.forEach((label, index) => {
-            targetStatsHTML += `<p><strong>${label}:</strong> ${diagnosisValues[index]} (${diagnosisPercents[index]}%)</p>`;
+            targetStatsHTML += `<p><strong>${label}:</strong> ${diagnosisValues[index].toLocaleString()} (${diagnosisPercents[index]}%)</p>`;
         });
         const targetStatsElement = document.getElementById('targetStats');
         if (targetStatsElement) {
@@ -215,18 +285,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 datasets: [{
                     label: 'Number of Cases',
                     data: diagnosisValues,
-                    backgroundColor: [
-                        '#27ae60',  // Healthy - Green
-                        '#f39c12',  // Hypothyroid - Orange
-                        '#e74c3c',  // Hyperthyroid - Red
-                        '#95a5a6'   // Other - Gray
-                    ],
-                    borderColor: [
-                        '#229954',
-                        '#d68910',
-                        '#c0392b',
-                        '#7f8c8d'
-                    ],
+                    backgroundColor: backgroundColor,
+                    borderColor: borderColor,
                     borderWidth: 2,
                     borderRadius: 8
                 }]

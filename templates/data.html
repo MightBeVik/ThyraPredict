@@ -245,6 +245,10 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+    // Pass stats to JavaScript
+    window.stats = {{ stats | tojson }};
+</script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 <script src="{{ url_for('static', filename='js/data-charts.js') }}"></script>
 {% endblock %}
