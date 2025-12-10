@@ -17,7 +17,7 @@
     <header>
         <div class="header-container">
             <a href="/" class="brand">
-                <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="ThyraPredict Logo" class="brand-logo">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="ThyraPredict Logo" class="brand-icon">
                 <span>ThyraPredict</span>
             </a>
             <a href="/" class="btn-return">
@@ -120,9 +120,10 @@
                 <h3>Want to Learn More About Thyroid Conditions?</h3>
                 <p>Visit our resources page to explore comprehensive information about hypothyroidism, hyperthyroidism, and how to manage your thyroid health.</p>
 
-                <div class="video-placeholder">
-                    <div class="checkerboard"></div>
-                </div>
+                <video class="video-player" controls>
+                    <source src="{{ url_for('static', filename='videos/videomain.mp4') }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
 
                 <a href="/resources" class="btn btn-teal-solid">Explore Resources</a>
             </div>
