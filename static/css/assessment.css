@@ -104,6 +104,12 @@ header {
   font-size: 18px;
 }
 
+.brand-logo {
+  width: 32px;
+  height: 32px;
+  margin-right: 8px;
+}
+
 .btn-return {
   display: flex;
   align-items: center;
