@@ -17,36 +17,37 @@
         <p class="section-subtitle">Ensemble approach using multiple machine learning algorithms</p>
         <div class="model-diagram">
             <div class="architecture-box">
-                <h3>📥 Input Features</h3>
+                <h3>📥 Input Features (15 total)</h3>
                 <ul>
-                    <li><strong>Demographics:</strong> Age, Gender</li>
-                    <li><strong>TSH:</strong> 0.4 - 4.0 mIU/L</li>
-                    <li><strong>T3:</strong> 70 - 200 ng/dL</li>
-                    <li><strong>TT4:</strong> 4.5 - 12.0 μg/dL</li>
-                    <li><strong>T4U:</strong> 24 - 39 %</li>
-                    <li><strong>FTI:</strong> 1.2 - 4.9 μIU</li>
-                    <li><strong>TBG:</strong> 10 - 26 ng/mL</li>
-                    <li><strong>Pregnancy:</strong> Yes/No</li>
+                    <li><strong>Demographics:</strong> Age, Gender, Pregnancy Status</li>
+                    <li><strong>TSH:</strong> Thyroid Stimulating Hormone</li>
+                    <li><strong>T3:</strong> Triiodothyronine level</li>
+                    <li><strong>TT4:</strong> Total Thyroxine level</li>
+                    <li><strong>T4U:</strong> T4 Uptake percentage</li>
+                    <li><strong>FTI:</strong> Free Thyroxine Index</li>
+                    <li><strong>TBG:</strong> Thyroid Binding Globulin</li>
+                    <li><strong>Test Status:</strong> Whether each test was performed</li>
                 </ul>
             </div>
             <div class="arrow">→</div>
             <div class="architecture-box">
-                <h3>⚙️ Ensemble Models</h3>
+                <h3>⚙️ Soft Ensemble (5 Models)</h3>
                 <ul>
-                    <li><strong>SVM</strong> (Support Vector Machine)</li>
-                    <li><strong>Random Forest</strong></li>
-                    <li><strong>Gradient Boosting</strong></li>
-                    <li><strong>Logistic Regression</strong></li>
+                    <li><strong>Random Forest</strong> (200 trees)</li>
+                    <li><strong>XGBoost</strong> (200 iterations)</li>
+                    <li><strong>Gradient Boosting</strong> (200 estimators)</li>
+                    <li><strong>SVM</strong> (RBF kernel)</li>
+                    <li><strong>Logistic Regression</strong> (baseline)</li>
                 </ul>
             </div>
             <div class="arrow">→</div>
             <div class="architecture-box">
                 <h3>📤 Predictions</h3>
                 <ul>
-                    <li>Hyperthyroidism Risk Score</li>
-                    <li>Hypothyroidism Risk Score</li>
-                    <li>Confidence Level</li>
-                    <li>Risk Category (Low/Medium/High)</li>
+                    <li><strong>Diagnosis:</strong> Negative, Hypo, or Hyper</li>
+                    <li><strong>Confidence:</strong> Percentage (0-100%)</li>
+                    <li><strong>Probabilities:</strong> Risk % for each condition</li>
+                    <li><strong>Model Type:</strong> Soft Ensemble identifier</li>
                 </ul>
             </div>
         </div>
@@ -62,25 +63,31 @@
                 <div class="algorithm-icon">🎯</div>
                 <h3>Support Vector Machine (SVM)</h3>
                 <p><strong>Why SVM:</strong> Excellent for binary and multi-class classification. Finds optimal decision boundaries that maximize the margin between classes. Particularly effective with the non-linear hormone interactions in thyroid data.</p>
-                <p><strong>Implementation:</strong> RBF kernel with hyperparameter tuning via GridSearchCV. Handles high-dimensional feature space efficiently.</p>
+                <p><strong>Implementation:</strong> RBF (Radial Basis Function) kernel with C=1.0, gamma='scale', probability=True for probability estimates. Achieves 94.60% accuracy. Handles high-dimensional feature space efficiently.</p>
             </div>
             <div class="algorithm-item">
                 <div class="algorithm-icon">🌲</div>
                 <h3>Random Forest</h3>
                 <p><strong>Why Random Forest:</strong> Ensemble of decision trees that provides robust predictions and handles missing data gracefully. Provides feature importance rankings which help identify the most critical clinical markers.</p>
-                <p><strong>Implementation:</strong> 100 trees with min_samples_split=5. Reduces overfitting through random feature selection at each split.</p>
+                <p><strong>Implementation:</strong> 200 trees with max_depth=15, min_samples_split=5, min_samples_leaf=2. Achieves 98.18% accuracy. Reduces overfitting through random feature selection at each split.</p>
+            </div>
+            <div class="algorithm-item">
+                <div class="algorithm-icon">⚡</div>
+                <h3>XGBoost</h3>
+                <p><strong>Why XGBoost:</strong> Extreme Gradient Boosting is the best performing individual model in our ensemble. Uses advanced regularization techniques to prevent overfitting while maintaining high accuracy.</p>
+                <p><strong>Implementation:</strong> 200 boosting iterations with learning_rate=0.1, max_depth=7, subsample=0.8, colsample_bytree=0.8. Achieves 98.24% accuracy - the highest of all individual models.</p>
             </div>
             <div class="algorithm-item">
                 <div class="algorithm-icon">📈</div>
                 <h3>Gradient Boosting</h3>
                 <p><strong>Why Gradient Boosting:</strong> Sequentially builds weak learners, with each correcting errors of previous ones. Captures complex non-linear relationships and interactions in hormone levels.</p>
-                <p><strong>Implementation:</strong> Learning rate=0.1, max_depth=5, n_estimators=200. Provides high accuracy on both training and test data.</p>
+                <p><strong>Implementation:</strong> 200 estimators with learning_rate=0.1, max_depth=5, subsample=0.8. Achieves 98.05% accuracy. Provides high accuracy on both training and test data.</p>
             </div>
             <div class="algorithm-item">
                 <div class="algorithm-icon">📊</div>
                 <h3>Logistic Regression</h3>
                 <p><strong>Why Logistic Regression:</strong> Provides probabilistic predictions directly. Interpretable model that shows how each feature contributes to disease risk. Serves as baseline model for comparison.</p>
-                <p><strong>Implementation:</strong> L2 regularization with C=1.0. Normalizes features before fitting to ensure convergence.</p>
+                <p><strong>Implementation:</strong> L2 regularization with max_iter=1000 for convergence. Achieves 94.21% accuracy. Features are standardized using StandardScaler before fitting.</p>
             </div>
         </div>
     </div>
@@ -92,180 +99,34 @@
         <h2>📊 Model Performance Metrics</h2>
         <div class="metrics-grid">
             <div class="metric-card">
-                <h3>Accuracy</h3>
-                <p class="metric-value">92%</p>
-                <p>Correct predictions across all classes</p>
+                <h3>Overall Accuracy</h3>
+                <p class="metric-value">98.37%</p>
+                <p>Soft Ensemble on 1,537 test samples</p>
             </div>
             <div class="metric-card">
-                <h3>Sensitivity</h3>
-                <p class="metric-value">89%</p>
-                <p>True positive rate for disease detection</p>
+                <h3>Precision (Normal)</h3>
+                <p class="metric-value">99%</p>
+                <p>Correctly identified healthy patients</p>
             </div>
             <div class="metric-card">
-                <h3>Specificity</h3>
-                <p class="metric-value">95%</p>
-                <p>True negative rate (healthy individuals)</p>
+                <h3>Recall (Normal)</h3>
+                <p class="metric-value">100%</p>
+                <p>True negative rate for healthy individuals</p>
             </div>
             <div class="metric-card">
-                <h3>AUC-ROC</h3>
-                <p class="metric-value">0.94</p>
-                <p>Model discrimination ability</p>
+                <h3>Hyper Precision</h3>
+                <p class="metric-value">90%</p>
+                <p>Hyperthyroidism detection accuracy</p>
             </div>
             <div class="metric-card">
-                <h3>Precision</h3>
-                <p class="metric-value">91%</p>
-                <p>Positive predictive value</p>
+                <h3>Hypo Recall</h3>
+                <p class="metric-value">97%</p>
+                <p>Hypothyroidism detection rate</p>
             </div>
             <div class="metric-card">
-                <h3>F1-Score</h3>
-                <p class="metric-value">0.90</p>
-                <p>Balanced performance metric</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Post-Prediction Recommendations Section -->
-<section class="post-prediction">
-    <div class="container">
-        <h2>💊 After Your Assessment: What's Next?</h2>
-        <p class="section-subtitle">Personalized recommendations based on your thyroid health status</p>
-        
-        <!-- Supplements Section -->
-        <div class="recommendations-grid">
-            <div class="recommendation-section">
-                <h3>🥗 Recommended Supplements</h3>
-                <div class="recommendation-list">
-                    <div class="recommendation-item">
-                        <h4>For Hypothyroidism:</h4>
-                        <ul>
-                            <li><strong>Selenium:</strong> 200 mcg daily - Supports T4 to T3 conversion</li>
-                            <li><strong>Iodine:</strong> 150 mcg daily - Essential for thyroid hormone synthesis</li>
-                            <li><strong>Iron:</strong> 18-32 mg daily - Necessary for proper thyroid function</li>
-                            <li><strong>Zinc:</strong> 8-11 mg daily - Enhances T3 and T4 production</li>
-                            <li><strong>B-Complex:</strong> Supports metabolism and energy</li>
-                        </ul>
-                    </div>
-                    <div class="recommendation-item">
-                        <h4>For Hyperthyroidism:</h4>
-                        <ul>
-                            <li><strong>Antioxidants:</strong> CoQ10, Vitamins C & E - Reduce oxidative stress</li>
-                            <li><strong>Magnesium:</strong> 400-420 mg daily - Calms nervous system</li>
-                            <li><strong>L-Arginine:</strong> Supports immune regulation</li>
-                            <li><strong>Selenium:</strong> 200 mcg daily - Protects thyroid tissue</li>
-                            <li><strong>Calcium:</strong> 1000-1200 mg daily - Monitor bone density</li>
-                        </ul>
-                    </div>
-                </div>
-                <p class="recommendation-note">⚠️ Consult your doctor before starting any supplements, especially if taking thyroid medication.</p>
-            </div>
-
-            <!-- Diet Section -->
-            <div class="recommendation-section">
-                <h3>🍎 Dietary Recommendations</h3>
-                <div class="recommendation-list">
-                    <div class="recommendation-item">
-                        <h4>Foods to Eat:</h4>
-                        <ul>
-                            <li><strong>Iodine-rich:</strong> Seaweed, fish, eggs, dairy</li>
-                            <li><strong>Selenium-rich:</strong> Brazil nuts, tuna, chicken, oats</li>
-                            <li><strong>Iron-rich:</strong> Spinach, red meat, legumes, fortified cereals</li>
-                            <li><strong>Zinc-rich:</strong> Oysters, beef, pumpkin seeds, chickpeas</li>
-                            <li><strong>Anti-inflammatory:</strong> Berries, fatty fish, olive oil, leafy greens</li>
-                        </ul>
-                    </div>
-                    <div class="recommendation-item">
-                        <h4>Foods to Limit/Avoid:</h4>
-                        <ul>
-                            <li><strong>Goitrogens:</strong> Raw cruciferous vegetables (if hypothyroid) - cook to reduce effect</li>
-                            <li><strong>High-sugar:</strong> Processed foods, sugary drinks</li>
-                            <li><strong>High-iodine:</strong> Limit if hyperthyroid (seaweed, kelp)</li>
-                            <li><strong>Gluten:</strong> May trigger autoimmune response in sensitive individuals</li>
-                            <li><strong>Excess soy:</strong> Can interfere with iodine absorption</li>
-                        </ul>
-                    </div>
-                </div>
-                <p class="recommendation-note">💡 Space medications 4+ hours from calcium, iron, and magnesium supplements for better absorption.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Model Limitations Section -->
-<section class="disclaimers-model">
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Doctors Near You Section -->
-<section class="doctors-section">
-    <div class="container">
-        <h2>👨‍⚕️ Find Endocrinologists Near You (Canada)</h2>
-        <p class="section-subtitle">Search for endocrinologists in your area by entering your postal code</p>
-        
-        <!-- Postal Code Search Box -->
-        <div class="postal-code-search">
-            <div class="search-form">
-                <input type="text" id="postalCodeInput" placeholder="Enter your Canadian postal code (e.g., M5V 3A8)" maxlength="7" class="postal-input">
-                <button id="searchBtn" class="btn btn-primary">🔍 Find Endocrinologists</button>
-            </div>
-            <p class="search-hint">We use Google Maps to find verified healthcare providers near you</p>
-        </div>
-
-        <!-- Map Container -->
-        <div id="map" class="map-container"></div>
-
-        <!-- Results Section -->
-        <div id="resultsContainer" style="display: none; margin-top: 2rem;">
-            <h3 id="resultsTitle">Endocrinologists Found</h3>
-            <div id="providersList" class="providers-list"></div>
-        </div>
-
-        <!-- Alternative Specialist Cards -->
-        <h3 style="margin-top: 3rem; margin-bottom: 2rem;">Other Healthcare Specialists</h3>
-        <div class="specialist-grid">
-            <div class="specialist-card">
-                <div class="specialist-icon">👨‍⚕️</div>
-                <h3>Primary Care Physicians</h3>
-                <p>General practitioners and internists. Can order initial thyroid tests and provide basic management. Consider referral to endocrinologist for complex cases.</p>
-                <a href="https://www.healthgrades.com" target="_blank" class="specialist-link">Find PCP →</a>
-            </div>
-            <div class="specialist-card">
-                <div class="specialist-icon">🧬</div>
-                <h3>Clinical Geneticists</h3>
-                <p>If autoimmune thyroid disease (Hashimoto's, Graves'). Helpful for understanding family history and genetic predisposition.</p>
-                <a href="https://www.nsgc.org/find-a-genetic-counselor" target="_blank" class="specialist-link">Find Geneticist →</a>
-            </div>
-            <div class="specialist-card">
-                <div class="specialist-icon">💊</div>
-                <h3>Pharmacists</h3>
-                <p>Medication specialists who understand drug interactions and optimal timing of thyroid medication administration.</p>
-                <a href="https://www.pharmacist.com/find-a-pharmacist" target="_blank" class="specialist-link">Find Pharmacist →</a>
-            </div>
-            <div class="specialist-card">
-                <div class="specialist-icon">🌿</div>
-                <h3>Functional Medicine</h3>
-                <p>Holistic approach to thyroid health, focusing on root causes and lifestyle optimization. Complements conventional treatment.</p>
-                <a href="https://www.ifm.org/find-a-practitioner" target="_blank" class="specialist-link">Find Practitioner →</a>
-            </div>
-        </div>
-
-        <div class="find-provider-box">
-            <h3>� Tips for Finding Healthcare Providers</h3>
-            <div class="provider-options">
-                <div class="option">
-                    <strong>Insurance Network Search:</strong> Check your provincial health plan or insurance provider's website for covered endocrinologists
-                </div>
-                <div class="option">
-                    <strong>Referral from GP:</strong> Ask your family doctor for a specialist referral to endocrinology
-                </div>
-                <div class="option">
-                    <strong>Hospital Endocrinology Departments:</strong> Contact your nearest hospital's endocrinology department for appointments
-                </div>
-                <div class="option">
-                    <strong>Canadian Endocrine Society:</strong> Visit <a href="https://www.ces.ca" target="_blank">www.ces.ca</a> for thyroid resources and provider directories
-                </div>
+                <h3>F1-Score (Hypo)</h3>
+                <p class="metric-value">0.96</p>
+                <p>Balanced hypothyroidism performance</p>
             </div>
         </div>
     </div>

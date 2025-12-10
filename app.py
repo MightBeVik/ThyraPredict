@@ -64,7 +64,10 @@ def get_dataset_stats():
             'max': float(df['age'].max()),
             'std': float(df['age'].std())
         },
-        'gender_distribution': df['sex'].value_counts().to_dict(),
+        'gender_distribution': {
+            'F': int(df[df['sex'] == 0].shape[0]),  # 0 = Female
+            'M': int(df[df['sex'] == 1].shape[0])   # 1 = Male
+        },
         'target_distribution': df['target'].value_counts().to_dict(),
         'tsh_stats': {
             'mean': float(df['TSH'].mean()),
@@ -201,6 +204,11 @@ def research():
 @app.route('/model')
 def model():
     return render_template('model.html')
+
+# Route for resources page
+@app.route('/resources')
+def resources():
+    return render_template('resources.html')
 
 # Route for data page
 @app.route('/data')

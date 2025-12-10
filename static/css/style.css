@@ -313,6 +313,12 @@ body {
     margin-right: auto;
 }
 
+.about-preview a {
+    display: block;
+    text-align: center;
+    margin-top: 2rem;
+}
+
 /* ===== Page Header ===== */
 .page-header {
     background: linear-gradient(135deg, rgba(26, 188, 156, 0.1), rgba(52, 152, 219, 0.1));
@@ -344,6 +350,15 @@ body {
     text-align: center;
 }
 
+.content-section .section-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    text-align: center !important;
+    margin-bottom: 3rem;
+    display: block;
+    width: 100%;
+}
+
 .section-subtitle {
     font-size: 1.1rem;
     color: var(--text-color);
@@ -372,50 +387,83 @@ body {
 }
 
 /* ===== Team Section ===== */
+/* ===== Team Section ===== */
 .team-section {
     padding: 80px 20px;
     background: var(--light-bg);
 }
 
-.team-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-}
-
-.team-member {
-    background: white;
-    padding: 2rem;
-    border-radius: 12px;
+.team-section h2 {
+    font-size: 2.5rem;
     text-align: center;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    transition: transform 0.3s ease;
-}
-
-.team-member:hover {
-    transform: translateY(-5px);
-}
-
-.member-avatar {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-}
-
-.team-member h3 {
-    font-size: 1.2rem;
     color: var(--dark-gray);
     margin-bottom: 0.5rem;
 }
 
-.team-member p {
+.team-subtitle {
+    text-align: center;
     color: var(--text-color);
-    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+    margin-bottom: 3rem;
+}
+
+.team-member {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.team-member:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.member-avatar {
+    font-size: 3.5rem;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.member-info {
+    flex: 1;
+}
+
+.member-info h3 {
+    font-size: 1.4rem;
+    color: var(--dark-gray);
+    margin: 0 0 0.3rem 0;
+}
+
+.member-role {
+    color: var(--primary-color);
+    font-weight: 600;
+    font-size: 1rem;
+    margin: 0 0 0.5rem 0;
 }
 
 .member-bio {
-    font-size: 0.9rem;
     color: #7f8c8d;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .team-member {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.5rem;
+    }
+    
+    .member-avatar {
+        font-size: 3rem;
+    }
 }
 
 /* ===== Disclaimer ===== */
@@ -526,6 +574,14 @@ body {
     padding: 80px 20px;
 }
 
+.methodology h2 {
+    text-align: left;
+}
+
+.methodology .section-subtitle {
+    text-align: left;
+}
+
 .methodology-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -583,7 +639,7 @@ body {
 .model-diagram {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: stretch;
     gap: 1.5rem;
     margin: 3rem 0;
     flex-wrap: wrap;
@@ -594,24 +650,31 @@ body {
     border: 2px solid var(--primary-color);
     border-radius: 12px;
     padding: 2rem;
-    min-width: 200px;
-    text-align: center;
+    flex: 1;
+    min-width: 250px;
+    max-width: 300px;
+    display: flex;
+    flex-direction: column;
 }
 
 .architecture-box h3 {
     color: var(--primary-color);
     margin-bottom: 1rem;
     font-size: 1.1rem;
+    text-align: center;
 }
 
 .architecture-box ul {
     list-style: none;
     padding: 0;
+    margin: 0;
+    text-align: left;
 }
 
 .architecture-box li {
     padding: 0.5rem 0;
     color: var(--text-color);
+    text-align: left;
 }
 
 .arrow {
@@ -1974,6 +2037,14 @@ tbody tr:hover {
 .post-prediction {
     padding: 4rem 0;
     background: linear-gradient(135deg, #f8f9fa 0%, rgba(26, 188, 156, 0.05) 100%);
+}
+
+.post-prediction h2 {
+    text-align: left;
+}
+
+.post-prediction .section-subtitle {
+    text-align: left;
 }
 
 .recommendations-grid {

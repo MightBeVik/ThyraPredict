@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get data from page or use sample data
     const stats = window.stats || {};
     
-    // Calculate gender distribution
+    // Calculate gender distribution (0 = Female, 1 = Male in dataset)
     let genderData = {
         'F': 0,
         'M': 0
@@ -14,19 +14,21 @@ document.addEventListener('DOMContentLoaded', function() {
         genderData = stats.gender_distribution;
     }
     
-    const totalGender = (genderData['F'] || 0) + (genderData['M'] || 0);
-    const femalePercent = totalGender > 0 ? ((genderData['F'] || 0) / totalGender * 100).toFixed(1) : 0;
-    const malePercent = totalGender > 0 ? ((genderData['M'] || 0) / totalGender * 100).toFixed(1) : 0;
+    const femaleCount = genderData['F'] || 0;
+    const maleCount = genderData['M'] || 0;
+    const totalGender = femaleCount + maleCount;
+    const femalePercent = totalGender > 0 ? ((femaleCount / totalGender) * 100).toFixed(1) : 0;
+    const malePercent = totalGender > 0 ? ((maleCount / totalGender) * 100).toFixed(1) : 0;
     
     // Update gender stats display
-    document.getElementById('femaleCount').textContent = genderData['F'] || '—';
+    document.getElementById('femaleCount').textContent = femaleCount.toLocaleString();
     document.getElementById('femalePercent').textContent = femalePercent;
     document.getElementById('malePercent').textContent = malePercent;
     
     // Gender distribution stats
     const genderStatsHTML = `
-        <p><strong>Female:</strong> ${genderData['F'] || 0} (${femalePercent}%)</p>
-        <p><strong>Male:</strong> ${genderData['M'] || 0} (${malePercent}%)</p>
+        <p><strong>Female:</strong> ${femaleCount.toLocaleString()} (${femalePercent}%)</p>
+        <p><strong>Male:</strong> ${maleCount.toLocaleString()} (${malePercent}%)</p>
     `;
     const genderStatsElement = document.getElementById('genderStats');
     if (genderStatsElement) {
