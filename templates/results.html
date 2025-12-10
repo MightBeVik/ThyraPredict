@@ -184,7 +184,13 @@
             
             // Extract prediction data
             const prediction = (resultsData.prediction || 'NEGATIVE').toLowerCase();
-            const confidence = (resultsData.confidence || 0) * 100;
+            let confidence = (resultsData.confidence || 0);
+            
+            // If confidence is already a percentage (> 1), don't multiply by 100
+            if (confidence <= 1) {
+                confidence = confidence * 100;
+            }
+            
             const probabilities = resultsData.probabilities || {};
             
             console.log('Prediction:', prediction);
@@ -224,9 +230,15 @@
             
             // Update breakdown stats
             if (probabilities && Object.keys(probabilities).length > 0) {
-                const negative = ((probabilities['Negative'] || probabilities['negative'] || 0) * 100).toFixed(1);
-                const hyper = ((probabilities['Hyper'] || probabilities['hyperthyroid'] || probabilities['hyper'] || 0) * 100).toFixed(1);
-                const hypo = ((probabilities['Hypo'] || probabilities['hypothyroid'] || probabilities['hypo'] || 0) * 100).toFixed(1);
+                // Helper function to convert value to percentage
+                const toPercent = (val) => {
+                    const num = parseFloat(val) || 0;
+                    return num > 1 ? num : num * 100;
+                };
+                
+                const negative = toPercent(probabilities['Negative'] || probabilities['negative'] || 0).toFixed(1);
+                const hyper = toPercent(probabilities['Hyper'] || probabilities['hyperthyroid'] || probabilities['hyper'] || 0).toFixed(1);
+                const hypo = toPercent(probabilities['Hypo'] || probabilities['hypothyroid'] || probabilities['hypo'] || 0).toFixed(1);
                 
                 document.querySelector('#stat1 .stat-value').textContent = negative + '%';
                 document.querySelector('#stat2 .stat-value').textContent = hyper + '%';
